@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/api/instantly/(.*)", "destination": "/api/instantly?path=$1" },
+    { "source": "/(.*)", "destination": "/public/$1" }
+  ]
+}
