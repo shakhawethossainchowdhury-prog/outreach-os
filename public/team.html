@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>OutReach OS — Team</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = 'https://yoromftqaaxndnjymghc.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlvcm9tZnRxYWF4bmRuanltZ2hjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2MDE5MzksImV4cCI6MjA5NjE3NzkzOX0.m5g8FaoVDIO-gpi-7Q5qAY4ZFVeR4U74KEYn_FcDeUo';
+</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080B12;--surface:#0F1420;--surface2:#161C2D;--surface3:#1C2338;
+  --border:#1E2740;--border2:#253055;--accent:#4F6EF7;--accent2:#7C3AED;
+  --text:#F0F4FF;--text2:#8892B0;--text3:#4A5578;
+  --success:#10B981;--danger:#EF4444;--warning:#F59E0B;
+  --font-head:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:14px}
+.app{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:210px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+.sidebar-head{padding:1.25rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.logo-txt{font-family:var(--font-head);font-weight:700;font-size:15px}
+.logo-txt span{color:var(--accent)}
+.sidebar-nav{flex:1;padding:.75rem .5rem}
+.nav-section{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);padding:.5rem .5rem .25rem;margin-top:.5rem}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;cursor:pointer;color:var(--text2);font-size:13px;transition:all .15s;margin-bottom:1px}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:rgba(79,110,247,.15);color:var(--accent);font-weight:500}
+.sidebar-foot{padding:.75rem;border-top:1px solid var(--border)}
+.user-row{display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;cursor:pointer;transition:background .15s}
+.user-row:hover{background:var(--surface2)}
+.avatar{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--accent2),var(--accent));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.user-info{flex:1;min-width:0}
+.user-name{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-role{font-size:10px;color:var(--accent2);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.main{flex:1;overflow-y:auto}
+.topbar{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface);position:sticky;top:0;z-index:10}
+.page-title{font-family:var(--font-head);font-size:18px;font-weight:700}
+.page-sub{font-size:12px;color:var(--text2);margin-top:1px}
+.content{padding:1.5rem}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:1rem}
+.card-title{font-family:var(--font-head);font-size:14px;font-weight:600;margin-bottom:1rem;display:flex;align-items:center;gap:7px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-family:var(--font-head);font-weight:600;border-radius:8px;cursor:pointer;border:1px solid var(--border2);background:var(--surface2);color:var(--text);transition:all .15s}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));border-color:transparent;color:#fff}
+.btn-primary:hover{opacity:.9;color:#fff}
+.btn-sm{padding:5px 10px;font-size:11px}
+.field{margin-bottom:1rem}
+.field label{display:block;font-size:11px;font-weight:600;color:var(--text2);letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px}
+.field input,.field select,.field textarea{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;font-size:13px;color:var(--text);font-family:var(--font-body);outline:none;transition:border-color .2s}
+.field input:focus,.field textarea:focus{border-color:var(--accent)}
+.field textarea{resize:vertical;min-height:120px;line-height:1.6}
+.badge{display:inline-block;font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px;letter-spacing:.04em;text-transform:uppercase}
+.badge-new{background:rgba(6,182,212,.15);color:#67E8F9;border:1px solid rgba(6,182,212,.3)}
+.badge-contacted{background:rgba(245,158,11,.15);color:#FCD34D;border:1px solid rgba(245,158,11,.3)}
+.badge-replied{background:rgba(16,185,129,.15);color:#6EE7B7;border:1px solid rgba(16,185,129,.3)}
+.badge-pending{background:rgba(245,158,11,.15);color:#FCD34D;border:1px solid rgba(245,158,11,.3)}
+.badge-done{background:rgba(16,185,129,.15);color:#6EE7B7;border:1px solid rgba(16,185,129,.3)}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{text-align:left;font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.07em;text-transform:uppercase;padding:8px 10px;border-bottom:1px solid var(--border)}
+.tbl td{padding:10px 10px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--surface2)}
+.rewrite-panel{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:1rem;font-size:13px;line-height:1.7;white-space:pre-wrap}
+.spinner{width:16px;height:16px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:12px 16px;font-size:13px;z-index:200;transform:translateY(10px);opacity:0;transition:all .3s}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{border-color:rgba(16,185,129,.4);color:#6EE7B7}
+.toast.error{border-color:rgba(239,68,68,.4);color:#FCA5A5}
+.page{display:none}.page.active{display:block}
+.empty{text-align:center;padding:2.5rem;color:var(--text3)}
+.empty .icon{font-size:32px;margin-bottom:.75rem}
+select option{background:var(--surface)}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="sidebar-head">
+    <div class="logo-icon">⚡</div>
+    <div class="logo-txt">Outreach<span>OS</span></div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">My Work</div>
+    <div class="nav-item active" onclick="goto('mywork')"><span>📋</span> My Tasks</div>
+    <div class="nav-item" onclick="goto('leads')"><span>👥</span> My Leads</div>
+    <div class="nav-item" onclick="goto('rewriter')"><span>✍️</span> Email Rewriter</div>
+  </nav>
+  <div class="sidebar-foot">
+    <div class="user-row" onclick="signOut()">
+      <div class="avatar" id="user-avatar">?</div>
+      <div class="user-info">
+        <div class="user-name" id="user-name">Loading...</div>
+        <div class="user-role">Member</div>
+      </div>
+      <span style="font-size:11px;color:var(--text3)">↩</span>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+
+<!-- MY WORK -->
+<div class="page active" id="page-mywork">
+  <div class="topbar">
+    <div><div class="page-title">My Tasks</div><div class="page-sub">Leads and emails assigned to you</div></div>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="card-title">👥 Assigned Leads</div>
+      <div id="my-leads"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MY LEADS -->
+<div class="page" id="page-leads">
+  <div class="topbar">
+    <div><div class="page-title">My Leads</div><div class="page-sub">Update status and add notes</div></div>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div id="leads-full"></div>
+    </div>
+  </div>
+</div>
+
+<!-- REWRITER -->
+<div class="page" id="page-rewriter">
+  <div class="topbar">
+    <div><div class="page-title">Email Rewriter</div><div class="page-sub">Rewrite cold emails with AI</div></div>
+  </div>
+  <div class="content">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+      <div>
+        <div class="card">
+          <div class="card-title">📝 Original Email</div>
+          <div class="field"><label>Subject</label><input type="text" id="rw-subj" placeholder="Original subject line"/></div>
+          <div class="field"><label>Body</label><textarea id="rw-body" placeholder="Paste original email..."></textarea></div>
+        </div>
+        <div class="card">
+          <div class="card-title">⚙️ Settings</div>
+          <div class="field"><label>Tone</label>
+            <select id="rw-tone">
+              <option value="human and conversational">Human & Conversational</option>
+              <option value="professional but warm">Professional but Warm</option>
+              <option value="direct and confident">Direct & Confident</option>
+            </select>
+          </div>
+          <div class="field"><label>CTA</label>
+            <select id="rw-cta">
+              <option value="soft question, like 'Worth a quick chat?'">Soft Question</option>
+              <option value="time offer, like 'Open Thursday?'">Time Offer</option>
+              <option value="value-first, like 'Want me to send an example?'">Value First</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="doRewrite()">✨ Rewrite</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="justify-content:space-between;display:flex">
+          <span>✅ Rewritten</span>
+          <button class="btn btn-sm" onclick="copyRW()">Copy</button>
+        </div>
+        <div id="rw-out"><div class="empty"><div class="icon">✍️</div><p>Fill original email and click Rewrite</p></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let currentUser = null;
+let myLeads = [];
+
+async function init() {
+  const {data:{session}} = await sb.auth.getSession();
+  if(!session){window.location.href='/';return;}
+  currentUser = session.user;
+  const {data:profile} = await sb.from('profiles').select('*').eq('id',currentUser.id).single();
+  if(profile?.role === 'admin'){window.location.href='/admin';return;}
+  document.getElementById('user-name').textContent = profile?.full_name || currentUser.email;
+  document.getElementById('user-avatar').textContent = (profile?.full_name||'M')[0].toUpperCase();
+  await loadMyLeads();
+  renderMyWork();
+}
+
+async function loadMyLeads() {
+  const {data} = await sb.from('leads').select('*').eq('assigned_to', currentUser.id).order('created_at',{ascending:false});
+  myLeads = data||[];
+}
+
+function goto(p) {
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.querySelector(`.nav-item[onclick="goto('${p}')"]`)?.classList.add('active');
+  if(p==='leads') renderLeadsFull();
+}
+
+function toast(msg, type='success') {
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.className='toast show '+type;
+  setTimeout(()=>el.className='toast',3000);
+}
+
+async function signOut(){await sb.auth.signOut();window.location.href='/';}
+
+function renderMyWork() {
+  document.getElementById('my-leads').innerHTML = myLeads.length ? `
+    <table class="tbl">
+      <thead><tr><th>Name</th><th>Email</th><th>Company</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody>${myLeads.map(l=>`
+        <tr>
+          <td>${l.first_name||''} ${l.last_name||''}</td>
+          <td style="color:var(--text2);font-size:12px">${l.email}</td>
+          <td style="font-size:12px">${l.company||'—'}</td>
+          <td><span class="badge badge-${l.status||'new'}">${l.status||'new'}</span></td>
+          <td>
+            <select onchange="updateStatus('${l.id}',this.value)" style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:12px;color:var(--text);outline:none">
+              ${['new','contacted','replied','qualified','closed'].map(s=>`<option value="${s}" ${l.status===s?'selected':''}>${s}</option>`).join('')}
+            </select>
+          </td>
+        </tr>
+      `).join('')}</tbody>
+    </table>
+  ` : '<div class="empty"><div class="icon">📋</div><p>No leads assigned to you yet</p></div>';
+}
+
+function renderLeadsFull() {
+  document.getElementById('leads-full').innerHTML = myLeads.length ? `
+    <table class="tbl">
+      <thead><tr><th>Name</th><th>Email</th><th>Company</th><th>Status</th><th>Notes</th><th>Update</th></tr></thead>
+      <tbody>${myLeads.map(l=>`
+        <tr>
+          <td>${l.first_name||''} ${l.last_name||''}</td>
+          <td style="font-size:12px;color:var(--text2)">${l.email}</td>
+          <td style="font-size:12px">${l.company||'—'}</td>
+          <td><span class="badge badge-${l.status||'new'}">${l.status||'new'}</span></td>
+          <td style="font-size:12px;color:var(--text2);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.notes||'—'}</td>
+          <td><button class="btn btn-sm" onclick="quickEdit('${l.id}')">Edit</button></td>
+        </tr>
+      `).join('')}</tbody>
+    </table>
+  ` : '<div class="empty"><div class="icon">👥</div><p>No leads assigned yet</p></div>';
+}
+
+async function updateStatus(id, status) {
+  await sb.from('leads').update({status}).eq('id',id);
+  const l = myLeads.find(x=>x.id===id);
+  if(l) l.status = status;
+  toast('Status updated');
+}
+
+function quickEdit(id) {
+  const l = myLeads.find(x=>x.id===id);
+  if(!l) return;
+  const overlay = document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)';
+  overlay.innerHTML = `
+    <div style="background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:1.75rem;width:100%;max-width:400px">
+      <div style="font-family:var(--font-head);font-size:16px;font-weight:700;margin-bottom:1.25rem">Update Lead</div>
+      <div class="field"><label>Status</label>
+        <select id="qe-status" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;font-size:13px;color:var(--text);outline:none">
+          ${['new','contacted','replied','qualified','closed'].map(s=>`<option value="${s}" ${l.status===s?'selected':''}>${s}</option>`).join('')}
+        </select>
+      </div>
+      <div class="field"><label>Notes</label><textarea id="qe-notes" style="width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;font-size:13px;color:var(--text);resize:vertical;min-height:80px;font-family:var(--font-body);outline:none">${l.notes||''}</textarea></div>
+      <div style="display:flex;gap:.75rem;margin-top:1rem">
+        <button class="btn btn-primary" style="flex:1;justify-content:center" onclick="saveQuickEdit('${id}')">Save</button>
+        <button class="btn" onclick="this.closest('[style*=fixed]').remove()">Cancel</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', e=>{ if(e.target===overlay) overlay.remove(); });
+}
+
+async function saveQuickEdit(id) {
+  const status = document.getElementById('qe-status').value;
+  const notes = document.getElementById('qe-notes').value;
+  await sb.from('leads').update({status,notes}).eq('id',id);
+  const l = myLeads.find(x=>x.id===id);
+  if(l){l.status=status;l.notes=notes;}
+  document.querySelector('[style*=fixed]')?.remove();
+  renderMyWork(); renderLeadsFull(); toast('Updated');
+}
+
+async function doRewrite() {
+  const subj = document.getElementById('rw-subj').value.trim();
+  const body = document.getElementById('rw-body').value.trim();
+  if(!body){toast('Paste your email first','error');return;}
+  const tone = document.getElementById('rw-tone').value;
+  const cta = document.getElementById('rw-cta').value;
+  const out = document.getElementById('rw-out');
+  out.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text2)"><div class="spinner" style="margin:0 auto .75rem"></div><div>Rewriting...</div></div>';
+  const prompt=`Rewrite this cold email to get replies. Tone: ${tone}. CTA: ${cta}. Under 130 words. Start with a pain hook, not "I". Use "you". No AI tone. Respond ONLY with JSON: {"subject":"...","body":"..."}
+
+Subject: ${subj}
+${body}`;
+  try {
+    const res=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,messages:[{role:'user',content:prompt}]})});
+    const data=await res.json();
+    const text=data.content.map(x=>x.text||'').join('');
+    const clean=text.replace(/```json|```/g,'').trim();
+    let p; try{p=JSON.parse(clean);}catch(e){p={subject:'Rewrite',body:text};}
+    out.innerHTML=`
+      <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Subject</div>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:14px;font-weight:500;margin-bottom:1rem">${p.subject}</div>
+      <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Body</div>
+      <div class="rewrite-panel" id="rw-result">${p.body}</div>
+    `;
+  } catch(e){out.innerHTML=`<span style="color:var(--danger)">Error: ${e.message}</span>`;}
+}
+
+function copyRW(){
+  const t=document.getElementById('rw-result')?.textContent||'';
+  navigator.clipboard.writeText(t);toast('Copied');
+}
+
+init();
+</script>
+</body>
+</html>
