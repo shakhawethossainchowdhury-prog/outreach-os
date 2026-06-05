@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>OutReach OS — Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080B12;--surface:#0F1420;--surface2:#161C2D;
+  --border:#1E2740;--accent:#4F6EF7;--accent2:#7C3AED;
+  --text:#F0F4FF;--text2:#8892B0;--text3:#4A5578;
+  --success:#10B981;--danger:#EF4444;--warning:#F59E0B;
+  --font-head:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font-body)}
+.bg-grid{position:fixed;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:40px 40px;opacity:.3;pointer-events:none}
+.bg-glow{position:fixed;top:-200px;left:50%;transform:translateX(-50%);width:800px;height:600px;background:radial-gradient(ellipse,rgba(79,110,247,.12) 0%,transparent 70%);pointer-events:none}
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;position:relative;z-index:1}
+.login-box{width:100%;max-width:420px}
+.logo{text-align:center;margin-bottom:2.5rem}
+.logo-mark{display:inline-flex;align-items:center;gap:10px;margin-bottom:1rem}
+.logo-icon{width:44px;height:44px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.logo-name{font-family:var(--font-head);font-size:22px;font-weight:700;letter-spacing:-.5px}
+.logo-name span{color:var(--accent)}
+.logo-sub{font-size:13px;color:var(--text2);line-height:1.5}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2rem;box-shadow:0 24px 64px rgba(0,0,0,.4)}
+.tabs{display:flex;gap:4px;background:var(--bg);border-radius:10px;padding:4px;margin-bottom:1.5rem}
+.tab{flex:1;text-align:center;padding:8px;font-size:13px;font-family:var(--font-head);font-weight:600;border-radius:7px;cursor:pointer;color:var(--text2);transition:all .2s}
+.tab.active{background:var(--surface2);color:var(--text)}
+label{display:block;font-size:11px;font-weight:500;color:var(--text2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;margin-top:1rem}
+label:first-of-type{margin-top:0}
+input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:14px;color:var(--text);font-family:var(--font-body);transition:border-color .2s;outline:none}
+input:focus{border-color:var(--accent)}
+.btn{width:100%;margin-top:1.5rem;padding:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:8px;color:#fff;font-size:14px;font-family:var(--font-head);font-weight:600;cursor:pointer;letter-spacing:.02em;transition:opacity .2s}
+.btn:hover{opacity:.9}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.msg{margin-top:1rem;padding:10px 12px;border-radius:8px;font-size:13px;display:none}
+.msg.error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#FCA5A5;display:block}
+.msg.success{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);color:#6EE7B7;display:block}
+.divider{text-align:center;font-size:12px;color:var(--text3);margin:1.5rem 0;position:relative}
+.divider::before{content:'';position:absolute;top:50%;left:0;right:0;height:1px;background:var(--border)}
+.divider span{background:var(--surface);padding:0 10px;position:relative}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+<div class="login-wrap">
+  <div class="login-box">
+    <div class="logo">
+      <div class="logo-mark">
+        <div class="logo-icon">⚡</div>
+        <div class="logo-name">Outreach<span>OS</span></div>
+      </div>
+      <p class="logo-sub">Cold email intelligence platform.<br>Built for teams that close.</p>
+    </div>
+    <div class="card">
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab('login')">Sign In</div>
+        <div class="tab" onclick="switchTab('signup')">Create Account</div>
+      </div>
+
+      <div id="login-form">
+        <label>Email Address</label>
+        <input type="email" id="login-email" placeholder="you@company.com"/>
+        <label>Password</label>
+        <input type="password" id="login-pass" placeholder="••••••••"/>
+        <button class="btn" onclick="doLogin()">Sign In →</button>
+      </div>
+
+      <div id="signup-form" style="display:none">
+        <label>Full Name</label>
+        <input type="text" id="signup-name" placeholder="Your full name"/>
+        <label>Email Address</label>
+        <input type="email" id="signup-email" placeholder="you@company.com"/>
+        <label>Password</label>
+        <input type="password" id="signup-pass" placeholder="Min 6 characters"/>
+        <button class="btn" onclick="doSignup()">Create Account →</button>
+      </div>
+
+      <div class="msg" id="msg"></div>
+    </div>
+  </div>
+</div>
+<script>
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+async function init() {
+  const {data:{session}} = await sb.auth.getSession();
+  if(session) redirect(session.user);
+}
+
+function redirect(user) {
+  // Check role then redirect
+  sb.from('profiles').select('role').eq('id',user.id).single().then(({data})=>{
+    if(data?.role === 'admin') window.location.href = 'admin.html';
+    else window.location.href = 'team.html';
+  });
+}
+
+function switchTab(t) {
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',i===(t==='login'?0:1)));
+  document.getElementById('login-form').style.display = t==='login'?'block':'none';
+  document.getElementById('signup-form').style.display = t==='signup'?'block':'none';
+  document.getElementById('msg').className = 'msg';
+}
+
+function showMsg(txt, type) {
+  const el = document.getElementById('msg');
+  el.textContent = txt; el.className = 'msg '+type;
+}
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  if(!email||!pass){showMsg('Fill in all fields.','error');return;}
+  showMsg('Signing in...','success');
+  const {data,error} = await sb.auth.signInWithPassword({email,password:pass});
+  if(error){showMsg(error.message,'error');return;}
+  redirect(data.user);
+}
+
+async function doSignup() {
+  const name = document.getElementById('signup-name').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const pass = document.getElementById('signup-pass').value;
+  if(!name||!email||!pass){showMsg('Fill in all fields.','error');return;}
+  if(pass.length<6){showMsg('Password must be at least 6 characters.','error');return;}
+  showMsg('Creating account...','success');
+  const {data,error} = await sb.auth.signUp({email,password:pass,options:{data:{full_name:name}}});
+  if(error){showMsg(error.message,'error');return;}
+  // Create profile
+  if(data.user){
+    // First user becomes admin
+    const {count} = await sb.from('profiles').select('*',{count:'exact',head:true});
+    const role = (count===0||count===null)?'admin':'member';
+    await sb.from('profiles').insert({id:data.user.id,email,full_name:name,role});
+    showMsg('Account created! You can now sign in.','success');
+    switchTab('login');
+  }
+}
+
+init();
+</script>
+</body>
+</html>
